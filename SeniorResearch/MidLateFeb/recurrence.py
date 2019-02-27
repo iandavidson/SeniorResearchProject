@@ -19,6 +19,26 @@ Start = [1,0,0,0,0,0,0]
 FINAL = [0,0,0,0,0,0,1]
 inputLength = 100050 #used for later when an iterative solution to this problem Implemented
 
+
+
+
+def divideByConstantFactor(n):
+    squareMatrix = [[]] * n
+    for i in range(n):
+        for j in range(n):
+            squareMatrix[i][j] = 0
+
+    #make square matrix from transitions
+
+    #use the A^2 trick. use the od and even cases with recursive function.
+
+
+
+
+
+
+
+
 ###############################################################################
 # This function recursively executes a recurrence equation                    #
 # we reference the global var "Transitions" to generate a recurrence formula  #
