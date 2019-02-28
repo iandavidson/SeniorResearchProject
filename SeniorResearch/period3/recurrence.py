@@ -7,9 +7,8 @@
 # Check notes.txt and ../README.txt	                                          #
 ###############################################################################
 
-
+import numpy as np
 import sys
-# import numpy as np
 from collections import *
 import copy
 
@@ -23,15 +22,53 @@ inputLength = 100050 #used for later when an iterative solution to this problem 
 
 
 def divideByConstantFactor(n):
-    squareMatrix = [[]] * n
-    for i in range(n):
-        for j in range(n):
-            squareMatrix[i][j] = 0
+
+
+    q = len(Transitions)
+    #create square matrix of transition table
+
+
+    delta = np.zeros((q,q))
+
 
     #make square matrix from transitions
+    for j in range(q):
+        for k in range(2):
+            delta[j][Transitions[j][k]] += 1
 
-    #use the A^2 trick. use the od and even cases with recursive function.
+    #use the A^2 trick. use the odd and even cases with recursive function.
+    newDelta = divideByConstantHelper(delta, n)
 
+
+    #do: start * newDelta * FINAL
+    acceptedSum = np.matmul(np.matmul(Start, newDelta), FINAL)
+
+    #then we need to compute 2^n
+    denominator = 2**n
+
+    #then do acceptedSum/2^n then return product
+    # print "accepted # of strings: " + str(acceptedSum)
+    # print "total possible string: " + "2^" + str(n)
+
+
+    return float(acceptedSum/denominator)
+
+
+
+
+
+
+#  does log(n) arithmatic steps in computing (delta)^(n)
+def divideByConstantHelper(delta, n):
+    if n == 0:
+        return np.identity(len(delta))#identity matrix
+
+    elif n % 2 == 0: #n is even
+        newDelta = copy.deepcopy(divideByConstantHelper(delta, n/2))
+        return np.matmul(newDelta, newDelta)
+    else: # n % 2 == 1
+        newDelta = copy.deepcopy(divideByConstantHelper(delta, (n-1)/2))
+        return np.matmul(np.matmul(newDelta, newDelta), delta)
 
 
 
@@ -126,22 +163,17 @@ def main():
     sigmaSize = len(Transitions[0]) # is size of sigma
 
     # len(Transitions) is the number of states
-    n =  inputLength   #int(input("please enter an integer input size for hardcoded DFA: "))
+    n =  int(input("please enter an integer input size for hardcoded DFA: "))
     if(type(n) is not int):
         exit(1)
-    # alpha = [None] * n
-    # for i in range(n):
-    #     alpha[i] = [0] * len(Transitions)
-    #
-    # alpha[0] = FINAL
+
+
+    print "Matrix method density at    n: " + str(divideByConstantFactor(n))
 
 
 
-    #AcceptingConvergenceProbability = executeRecurrenceRecursive(0, n)
-    # AcceptingConvergenceProbability = executeRecurrenceIterative(alpha, n, sigmaSize)
     AcceptingConvergenceProbability = executeRecurrenceIterativeVersion2(n, sigmaSize)
-    print("Accepting Probability V2: ", AcceptingConvergenceProbability, " with n=", n)
-
+    print "Iterative method density at n: " + str(AcceptingConvergenceProbability)
 
 
 
@@ -153,5 +185,10 @@ def main():
     #         print "sequence of congergence on state: ", k
     #         for l in range(len(alpha)):
     #             print "for input size: ", l, " probability: ", alpha[l][k]
+
+
     return
+
+
+
 main()

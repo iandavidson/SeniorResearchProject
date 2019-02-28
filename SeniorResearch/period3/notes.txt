@@ -1,0 +1,20 @@
+for period3:
+
+
+I wanted to implement an algorithm that
+finds the nth power of a matrix in log(n) arithmetic steps:
+  Find this in recurrence.py
+
+
+Also I wanted to start looking at some ways in which I can doctor certain
+undesirable traits of an inputted DFA:
+  My plan right now is to get out these ideas/edge cases then next week go ahead
+  and try to implement them.
+
+1. Finding out if an accepting state is reachable from states all states
+potential solutions:
+        a. similar to compute-limit() where a all unreachable states are given self loops Transitions
+        b. Create a new dfa which strictly does not have unreachable states
+            -> run a bfs on all states and see if no accepting states are visited.
+              -> remove that state from dfa
+            -> create new dfa defining trait
