@@ -1,7 +1,7 @@
 ###############################################################################
 # Author : Ian Davidson                                                       #
 # Class: CS496 Senior Capstone Project                    	                  #
-# Date: March 5, 2019		  			                                      #
+# Date: Feb 16, 2019		  			                                      #
 # About: This program is intended to run in Python 2.7.15 with librarys numpy,#
 #	   collections, and sys.                                                  #
 # Check notes.txt and ../README.txt	                                          #
@@ -21,7 +21,7 @@ inputLength = 100050 #used for later when an iterative solution to this problem 
 
 
 
-def MatrixMethodForDensity(n):
+def divideByConstantFactor(n):
     q = len(Transitions)
     #create square matrix of transition table
     delta = np.zeros((q,q))
@@ -37,34 +37,6 @@ def MatrixMethodForDensity(n):
 
     #do: start * newDelta * FINAL
     acceptedSum = np.matmul(np.matmul(Start, newDelta), FINAL)
-
-    #then we need to compute 2^n
-    denominator = 2**n
-
-    #then do acceptedSum/2^n then return product
-    # print "accepted # of strings: " + str(acceptedSum)
-    # print "total possible string: " + "2^" + str(n)
-
-    return float(acceptedSum/denominator)
-
-
-def MatrixMethodForDensityV2(n):
-    #version 2 uses a more efficient method of doing the last matrix multiplications
-    q = len(Transitions)
-    #create square matrix of transition table
-    delta = np.zeros((q,q))
-
-    #make square matrix from transitions
-    for j in range(q):
-        for k in range(2):
-            delta[j][Transitions[j][k]] += 1
-
-    #use the A^2 trick. use the odd and even cases with recursive function.
-    newDelta = divideByConstantHelper(delta, n)
-
-
-    #do: dotProduct(newDelta.FirstRow, FINAL) <- assuming the first state is starting
-    acceptedSum = np.dot(newDelta[0], FINAL)
 
     #then we need to compute 2^n
     denominator = 2**n
@@ -187,8 +159,8 @@ def main():
         exit(1)
 
 
-    print "Matrix method v1 density at    n: " + str(MatrixMethodForDensity(n))
-    print "Matrix method v1 density at    n: " + str(MatrixMethodForDensityV2(n))
+    print "Matrix method density at    n: " + str(divideByConstantFactor(n))
+
 
 
     AcceptingConvergenceProbability = executeRecurrenceIterativeVersion2(n, sigmaSize)
