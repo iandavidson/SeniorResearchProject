@@ -10,7 +10,8 @@
 import numpy as np
 import sys
 from collections import *
-import copy
+import copy as copy
+import math
 
 # dfa encoding from recurrenceRef.pdf hardcoded for simplicity's sake
 Transitions = [[1,5],[3,5],[0,5],[4,5],[4,3],[6,6],[5,6]]
@@ -19,9 +20,9 @@ FINAL = [0,0,0,0,0,0,1]
 inputLength = 100050 #used for later when an iterative solution to this problem Implemented
 
 
-
-
-def MatrixMethodForDensity(n):
+def MatrixDensityTrend(n):
+    #uses a more efficient method of doing the last matrix multiplications
+    #also we will be storing the
     q = len(Transitions)
     #create square matrix of transition table
     delta = np.zeros((q,q))
@@ -31,49 +32,28 @@ def MatrixMethodForDensity(n):
         for k in range(2):
             delta[j][Transitions[j][k]] += 1
 
-    #use the A^2 trick. use the odd and even cases with recursive function.
-    newDelta = divideByConstantHelper(delta, n)
 
 
-    #do: start * newDelta * FINAL
-    acceptedSum = np.matmul(np.matmul(Start, newDelta), FINAL)
+    #helper function to find all A^(i^2 % 2 == 0) from i <- 0  until i <- floor(log2(n))
+    sizeOfDegreeList = int(math.floor(math.log(n, 2.0)))
+    degreeList = [copy.deepcopy(delta)] * sizeOfDegreeList
 
-    #then we need to compute 2^n
-    denominator = 2**n
-
-    #then do acceptedSum/2^n then return product
-    # print "accepted # of strings: " + str(acceptedSum)
-    # print "total possible string: " + "2^" + str(n)
-
-    return float(acceptedSum/denominator)
+    
 
 
-def MatrixMethodForDensityV2(n):
-    #version 2 uses a more efficient method of doing the last matrix multiplications
-    q = len(Transitions)
-    #create square matrix of transition table
-    delta = np.zeros((q,q))
-
-    #make square matrix from transitions
-    for j in range(q):
-        for k in range(2):
-            delta[j][Transitions[j][k]] += 1
-
-    #use the A^2 trick. use the odd and even cases with recursive function.
-    newDelta = divideByConstantHelper(delta, n)
-
-
-    #do: dotProduct(newDelta.FirstRow, FINAL) <- assuming the first state is starting
-    acceptedSum = np.dot(newDelta[0], FINAL)
-
-    #then we need to compute 2^n
-    denominator = 2**n
+    #do this iteratively so avoid recomputing certain values
+            # #do: dotProduct(newDelta[StartingState], FINAL) <- assuming the first state is starting
+            # acceptedSum = np.dot(newDelta[0], FINAL)
+            #
+            # #then we need to compute 2^n
+            # denominator = 2**n
 
     #then do acceptedSum/2^n then return product
     # print "accepted # of strings: " + str(acceptedSum)
     # print "total possible string: " + "2^" + str(n)
 
     return float(acceptedSum/denominator)
+
 
 
 
@@ -91,30 +71,6 @@ def divideByConstantHelper(delta, n):
 
 
 
-
-
-
-
-###############################################################################
-# This function recursively executes a recurrence equation                    #
-# we reference the global var "Transitions" to generate a recurrence formula  #
-# for any state with a given current input left, denoted by "n"               #
-# Also note this algorithm is 2^n time complexity,                            #
-# This is known as Version1 for computing recurrence based off transitions.   #
-###############################################################################
-def executeRecurrenceRecursive(i, n):
-    if(n == 0): #basecase
-        return FINAL[i]
-
-    temp = 0.0
-    for k in range(len(Transitions[i])): #tells us how many transitions are there out of state i to get its respective relation
-        probability = float(executeRecurrenceRecursive(Transitions[i][k], n-1))
-        #print("prob for i= ", i, " n = ", n, " : ", probability)
-        temp += probability
-    return float((temp)/len(Transitions[i]))
-
-
-
 ###############################################################################
 #  alpha = the 2d array used to store values of n * |Q|   (very bad space complexity-wise)#
 #  |Q| => len(Transitions[anyvalue: 0->n])                                    #
@@ -128,11 +84,11 @@ def executeRecurrenceIterative(alpha, n, sigmaSize):
     for i in range(1, n):
         for j in range(len(Transitions)):
 
-            alpha[i][j] = float(alpha[i-1][Transitions[j][0]] + alpha[i-1][Transitions[j][1]])/2
+            alpha[i][j] = (alpha[i-1][Transitions[j][0]] + alpha[i-1][Transitions[j][1]])/2.0
             print("alpha[",i,"][",j,"]: ",  alpha[i][j])
             #print("i: ", i, " j: ", j)
         # ELSE: dont do anything
-    return float(float(alpha[n-1][Transitions[0][0]] + alpha[n-1][Transitions[0][1]])/2)
+    return float(float(alpha[n-1][Transitions[0][0]] + alpha[n-1][Transitions[0][1]])/2.0
 
 
 ###############################################################################
@@ -187,9 +143,8 @@ def main():
         exit(1)
 
 
-    print "Matrix method v1 density at  n: " + str(MatrixMethodForDensity(n))
-    print "Matrix method v2 density at  n: " + str(MatrixMethodForDensityV2(n))
-
+    MatrixMethodList = MatrixDensityTrend(n)
+    IterativeMethodList = IterativeDensityTrend(n)
 
     AcceptingConvergenceProbability = executeRecurrenceIterativeVersion2(n, sigmaSize)
     print "Iterative method density at n: " + str(AcceptingConvergenceProbability)

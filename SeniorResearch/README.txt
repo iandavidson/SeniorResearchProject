@@ -21,5 +21,6 @@ Early/mid Feb:
 	  (not completed yet)Program computeDensity.py contains the following algorithms: "Finding SCC", "compute period", "compute limit"
 	       Steps that need to happen.
 
-update 1: Finding SCC algorithm implemented.
+Period3:
+	Implemented multiple different ways using a recurrence formula
 	       
