@@ -90,6 +90,16 @@ class NFA:
         #will return a list!
         return self.Transitions[state][inputIndex]
 
+    #scc class member
+    def SCCSearchPrint(self, index, visited, componentIndex):
+        # should print out the vertex we saw
+        visited[index] = True
+        self.StronglyCCs[componentIndex] = index
+
+        for i in range(len(self.Transitions[index])):
+            if !visited[i]:
+                self.SCCSearchPrint(i, visited, componentIndex)
+
 
     def InitialBreadthFirstSearch(self, firstState):
 
@@ -280,7 +290,37 @@ class DFA:
         self.States = correctedStates
         self.Final = correctedFinal
 
+
+        self.FixNullDeltas()
+
+
         return
+
+
+    def FixNullDeltas(self):
+        #mutator function, helper for PreProcessDFA()
+        #we need to look thorugh all of the transitions to see if there are 2 coming out of each state,
+            #if we dont find any 'null' transitions, self object isnot altered.
+            #else we add in another state that can be considered fail, this state will have all originally null deltas as incoming edges,
+        needFailState = False
+        for i in range(len(self.States)):
+            if len(self.Transitions[i]) < self.InputSize:
+                needFailState = True
+                dif = self.InputSize - len(self.Transitions[i])
+                for j in range(dif):
+                    self.addEdge(i, self.States)
+            # for j in range(self.InputSize):
+            #     if self.Transitions[i][j] ==
+
+        if needFailState:
+            deadState = [self.States, self.States]
+            self.Transitions.push(deadState)
+            self.States += 1
+            self.FINAL = self.FINAL + [0]
+
+
+
+
 
     def delta(self, state, inputIndex):
 
@@ -408,12 +448,51 @@ class DFA:
 
 
 
+    def getTranspose(self):
+        #when a dfa is reversed, it becomes an unambiguous nfa
+        #that means we will be returning an instance of NFA class.
+        nfa = NFA(self.States, self.InputSize, self.Final)
+
+        for i in range(States):
+            for j in range(len(self.Transitions[i])):
+                nfa.addEdge(self.Transitions[i][j], i)
+
+        return nfa
 
 
+    def SCCSearchHelper(self, index, visited, stack):
+        visited[i] = True
+        for i in range(len(self.Transitions[index])):
+            if !visited[i]:
+                self.SCCSearchHelper(index, visited, stack)
+        stack = stack.append(v)
 
     def findSCCs(self):
         #unimplemented
-        return
+
+        #make stack
+        stack = []
+
+        visited = [False] * self.States
+
+        for i in range(len(self.Transitions)):
+            if visited[i] == False:
+                self.SCCSearchHelper(i, visted, stack)
+
+        transpose = self.getTranspose()
+
+        revisited = [False] * self.States
+
+        componentIndex = 0
+        while stack:
+            index = stack.pop()
+            if revisited[index] == False:
+                self.StronglyCCs.append([])
+                transpose.SCCSearchPrint(index, revisited, componentIndex )
+                componentIndex += 1
+
+        for j in range(len(transpose.StronglyCCs)):
+            self.StronglyCCs.append(copy.deepcopy(transpose.StronglyCCs[j]))
 
 # 1.  For each vertex u of the graph, mark u as unvisited. Let L be empty.
 # 2.  For each vertex u of the graph do Visit(u), where Visit(u) is the recursive subroutine:
