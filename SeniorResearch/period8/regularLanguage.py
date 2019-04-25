@@ -156,6 +156,10 @@ class NFA:
                 #if input0 or input1 is  greater than 1 at any point, then we can say the nfa is NOT unambiguous
 
 
+                #current[j] = float(input0 + input1)/2.0 #force a cast to float type
+                # if len(delta0)+ len(delta1) > 1:
+                #     current[j] = float(input0 + input1)/(len(delta0) + len(delta1)) #force a cast to float type
+                # else:
                 current[j] = float(input0 + input1)/2.0 #force a cast to float type
 
                 # if self.Final[j] == 1 and i > 100000:
@@ -623,7 +627,7 @@ def ComputeOnDfa(dfa):
         plt.show()
 
     elif task == 2:
-        wordLen = int(input("provide input length, below 1024 please:  "))
+        wordLen = int(input("provide input length please:  "))
         #time both of these tasks, print out values
         matrixTimeStart = time.time()
         matrixDensity = dfa.ComputeDensityMatrix(wordLen +1)
@@ -633,9 +637,12 @@ def ComputeOnDfa(dfa):
         recurrenceTimeEnd = time.time()
         # print "Matrix Density: ", matrixDensity
         # print "Recurrence Density: ", recurrenceDensity
-        print "\n"
-        print "matrix time: " + str(matrixTimeEnd - matrixTimeStart)
-        print "recurrence time: " + str(recurrenceTimeEnd - recurrenceTimeStart)
+        # print "\n"
+        print "Matrix time:     " + str(matrixTimeEnd - matrixTimeStart)
+        print "Recurrence time: " + str(recurrenceTimeEnd - recurrenceTimeStart)
+        print ""
+        print "Recurrence computation density value: " + str(recurrenceDensity)
+        print "Matrix computation density value:     " + str(matrixDensity)
     elif task == 3:
 
         WordSet = []
@@ -728,6 +735,70 @@ def callWithNFAExample1():
 
     print logArray
 
+def callGameExample():
+
+    states = 9
+    inputSize = 2
+    Final1 = [0,0,0,0,1,0,0,0,0]
+    #Final1 = [0,0,0,0,1,0,0,0,1]
+    Final2 = [0,0,0,0,0,0,0,0,1]
+
+    Choice1 = NFA(states, inputSize, Final1)
+    Choice2 = NFA(states, inputSize, Final2)
+
+    Choice1.addEdge(0,1,0)
+    Choice1.addEdge(0,6,0)
+    Choice1.addEdge(0,2,1)
+    Choice1.addEdge(0,5,1)
+    Choice1.addEdge(1,1,0)
+    Choice1.addEdge(1,2,1)
+    Choice1.addEdge(2,1,0)
+    Choice1.addEdge(2,3,1)
+    Choice1.addEdge(3,4,0)
+    Choice1.addEdge(3,3,1)
+    # Choice1.addEdge(4,4,0)
+    # Choice1.addEdge(4,4,1)
+    Choice1.addEdge(5,6,0)
+    Choice1.addEdge(5,5,1)
+    Choice1.addEdge(6,6,0)
+    Choice1.addEdge(6,7,1)
+    Choice1.addEdge(7,6,0)
+    Choice1.addEdge(7,8,1)
+    # Choice1.addEdge(8,8,0)
+    # Choice1.addEdge(8,8,1)
+
+    Choice2.addEdge(0,1,0)
+    Choice2.addEdge(0,6,0)
+    Choice2.addEdge(0,2,1)
+    Choice2.addEdge(0,5,1)
+    Choice2.addEdge(1,1,0)
+    Choice2.addEdge(1,2,1)
+    Choice2.addEdge(2,1,0)
+    Choice2.addEdge(2,3,1)
+    Choice2.addEdge(3,4,0)
+    Choice2.addEdge(3,3,1)
+    # Choice2.addEdge(4,4,0)
+    # Choice2.addEdge(4,4,1)
+    Choice2.addEdge(5,6,0)
+    Choice2.addEdge(5,5,1)
+    Choice2.addEdge(6,6,0)
+    Choice2.addEdge(6,7,1)
+    Choice2.addEdge(7,6,0)
+    Choice2.addEdge(7,8,1)
+    # Choice2.addEdge(8,8,0)
+    # Choice2.addEdge(8,8,1)
+
+
+    wordLen = 100
+    lowLogValue = 0
+    highLogValue = 50
+    logArray1 = Choice1.LogDensityRecurrence(wordLen, lowLogValue, highLogValue)
+    logArray2 = Choice2.LogDensityRecurrence(wordLen, lowLogValue, highLogValue)
+
+    # print logArray1
+    # print logArray2
+    for i in range(len(logArray1)):
+        print "1: " + str(logArray1[i]) + " 2: " + str(logArray2[i])
 
 
 def main():
@@ -747,11 +818,13 @@ def main():
             exit(1)
 
     else:
-        answer = int(input("NFA 0, or 1: "))
+        answer = int(input("NFA 0, 1 or 2: "))
         if answer == 0:
             callWithNFAExample0()
         elif answer == 1:
             callWithNFAExample1()
+        elif answer == 2:
+            callGameExample()
 
 
     #   dfa.PreProcessDFA()
