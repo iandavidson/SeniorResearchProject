@@ -1,0 +1,23 @@
+What has been accomplished at period6:
+
+regularLangugae.py
+  contains classes for representations of DFA and Unambiguous NFA
+
+  Both classes currently do the following:
+    class members: transitions, state size, and input alphabet size
+
+    important operations:
+        addEdge() -> used to add data into the transitions object of instance.
+
+
+  Specific to DFA class:
+    PreProcessDFA()  -> finds and removes useless states from the instance.
+        -> first: done by a bfs from the starting state. all unreachable states are removed.
+        -> second:
+
+
+Coming with period7:
+
+    Still needs to be implemented:
+        -> findStronglyConnectedComponents.
+        -> find transpose of graph.
