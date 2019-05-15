@@ -22,7 +22,8 @@ import time as time
 #   Operations to compute density for a range of values:
 #     ComputeDensityRangeRecurrence // this function requires a vector-start array (distributed starting state)
 # 
-# 
+#   Operations to compare time for completion of a density computation:
+#     CompareMatrixRecurrenceVector
 ###############################################################################
 class MarkovChain:
     def __init__(self, states, transitions):
@@ -185,18 +186,33 @@ class MarkovChain:
                 convergence = 0.0
                 for i in range(self.States):
                     convergence += (current[i] * Start[i])
-                log.append( convergence)
+                log.append(convergence)
 
-
-        convergence = 0.0
-        for i in range(self.States):
-            convergence += (current[i] * Start[i])
-        log.append(convergence)
         return log
 
+
+    def CompareMatrixRecurrenceVector(self, Final, Start, wordLen):
+#     Start -> list with States elements, where the sum => 1, provides initial conditions.
+#     Final -> list with States elements, where values are 0 || 1 -> for states with indexs we are interested in convergence on. #
+#               (same as final vector for DFA/NFA)          
+# what it does: will print time how long it took for the same computation to occure for both Matrix and Recrrence methods.
+        matrixTimeStart = time.time()
+        matrixDensity = self.ComputeDensityMatrixVectorStart(Final, Start, wordLen)
+        matrixTimeEnd = time.time()
+        recurrenceTimeStart = time.time()
+        recurrenceDensity = self.ComputeDensityRecurrenceVectorStart(Final, Start, wordLen)
+        recurrenceTimeEnd = time.time()
+        print "Comparing Matrix vs Recurrence method of computing density, input size computed for is: " + str(wordLen)
+        print "Matrix time:     " + str(matrixTimeEnd - matrixTimeStart)
+        print "Recurrence time: " + str(recurrenceTimeEnd - recurrenceTimeStart) + "\n"
+        print "Recurrence computation density value: " + str(recurrenceDensity)
+        print "Matrix computation density value:     " + str(matrixDensity) + "\n"
+
+
+
+
 def main():
-
-
+    #here we are using static data as the input method.
     StateTitles = ["AA, AA","aa, aa","AA, aA","aa, aA","aA, aA","aa, AA"]
     Transitions = [
                 [1,0,0,0,0,0], #AA, AA
@@ -214,31 +230,40 @@ def main():
     start = 5
 
 
+    tempResult =0
+
     print "ComputeDensityMatrixSingleStart:"
-    ComputeDensityMatrixSingleStartResult = markovChain.ComputeDensityMatrixSingleStart(final, start, 6)
-    print str(ComputeDensityMatrixSingleStartResult) + "\n"
+    tempResult = markovChain.ComputeDensityMatrixSingleStart(final, start, 6)
+    print str(tempResult) + "\n"
 
     
     print "ComputeDensityRecurrenceSingleStart:"
-    ComputeDensityRecurrenceSingleStartResult = markovChain.ComputeDensityRecurrenceSingleStart(final, start, 5)
-    print str(ComputeDensityRecurrenceSingleStartResult) + "\n"
+    tempResult = markovChain.ComputeDensityRecurrenceSingleStart(final, start, 5)
+    print str(tempResult) + "\n"
 
 
     startVector = [0.25, 0.25, 0, 0, .25, .25]
 
 
     print "ComputeDensityMatrixVectorStart:"
-    ComputeDensityMatrixVectorStartResult = markovChain.ComputeDensityMatrixVectorStart(final, startVector, 5)
-    print str(ComputeDensityMatrixVectorStartResult) + "\n"
+    tempResult = markovChain.ComputeDensityMatrixVectorStart(final, startVector, 5)
+    print str(tempResult) + "\n"
 
 
     print "ComputeDensityRecurrenceVectorStart:"
-    ComputeDensityRecurrenceVectorStartResult = markovChain.ComputeDensityRecurrenceVectorStart(final, startVector, 5)
-    print str(ComputeDensityRecurrenceVectorStartResult) + "\n"
+    tempResult = markovChain.ComputeDensityRecurrenceVectorStart(final, startVector, 5)
+    print str(tempResult) + "\n"
 
-    print "ComputeDensityRangeRecurrence: with start: 1, finish: 5" 
-    ComputeDensityRangeRecurrenceResult = markovChain.ComputeDensityRangeRecurrence(final, startVector, 1, 5)
-    print ComputeDensityRangeRecurrenceResult
+
+    
+    markovChain.CompareMatrixRecurrenceVector(final,startVector, 50)
+
+
+
+    print "ComputeDensityRangeRecurrence: with start: 1, finish: 10" 
+    tempResult = markovChain.ComputeDensityRangeRecurrence(final, startVector, 1, 10)
+    print tempResult
+
 
 main()  
 

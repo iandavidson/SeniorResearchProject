@@ -46,7 +46,6 @@ class NFA:
 
     #function used to add an edge directed from stateIdx: <fromState> -> <endState>
     def addEdge(self, fromState, endState, edgeValue):
-
         self.Transitions[fromState][edgeValue].append(endState)
 
 

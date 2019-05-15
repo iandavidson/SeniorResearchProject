@@ -6,16 +6,41 @@ import matplotlib.pyplot as plt
 import time as time
 
 
-
+#important note! DFA Class is dependant on NFA class, in the function transpose (called as helper when FindSCCs() )
 
 
 
 
 ###############################################################################
-# DFA class: to represent a regular language for usage in the                 #
-# algorithm compute-period                                                    #
+# DFA class: to represent a regular language for a Deterministic Finite Automaton #
+# members:
+#   States -> number of states in instance
+#   Transitions -> [States -> [InputSize]] 2d list, list can be passed in or addEdge can be used to add edges in graph.(__init__)
+#   Final -> list size States, that have either 0 or 1, whether or not they are accepting.
+#   StronglyCCs -> list of lists, each element in outter list is signifies a unique SCC in the graph.
+#           -> filled in after calling self.FindSCCs()
+# 
+#  Basic Class Operations:
+#     addEdge -> used if we start with a blank transition table, we can fill in items one at a time
+#     PreProcessDFA -> used to determine if there are issues with the given instance, usually should be called before computing density
+# 
+# 
+# 
+# 
+# 
+# 
+#  Operations of Class:
+# 
+# 
+#                                                     #
 # other alogithms implemented for the class are bfs and finding SCCs   #
 # PreProcessDFA eliminates useless states. Is explicitly called on an instance#
+#      #
+#
+#
+
+
+
 ###############################################################################
 class DFA:
 
@@ -74,10 +99,6 @@ class DFA:
         self.States = correctedStates
         self.Final = correctedFinal
 
-
-
-
-
         return
 
 
@@ -107,14 +128,7 @@ class DFA:
 
 
     def delta(self, state, inputIndex):
-
-        # if(self.Transitions[state][inputIndex] == null):
-            #generate a transition and assign on that ^^
-                #generate with: (random-seed * state + inputIndex) % self.states
         return self.Transitions[state][inputIndex]
-
-
-
 
 
     def InitialBreadthFirstSearch(self, firstState):
@@ -252,7 +266,18 @@ class DFA:
         stack = stack.append(v)
 
     def findSCCs(self):
-        #unimplemented
+# 1.  For each vertex u of the graph, mark u as unvisited. Let L be empty.
+# 2.  For each vertex u of the graph do Visit(u), where Visit(u) is the recursive subroutine:
+#         If u is unvisited then:
+#             1.Mark u as visited.
+#             2.For each out-neighbour v of u, do Visit(v).
+#             3.Prepend u to L.
+#         Otherwise do nothing.
+# 3.  For each element u of L in order, do Assign(u,u) where Assign(u,root) is the recursive subroutine:
+#         If u has not been assigned to a component then:
+#             1.Assign u as belonging to the component whose root is root.
+#             2.For each in-neighbour v of u, do Assign(v,root).
+#         Otherwise do nothing.
 
         #make stack
         stack = []
@@ -278,15 +303,8 @@ class DFA:
         for j in range(len(transpose.StronglyCCs)):
             self.StronglyCCs.append(copy.deepcopy(transpose.StronglyCCs[j]))
 
-# 1.  For each vertex u of the graph, mark u as unvisited. Let L be empty.
-# 2.  For each vertex u of the graph do Visit(u), where Visit(u) is the recursive subroutine:
-#         If u is unvisited then:
-#             1.Mark u as visited.
-#             2.For each out-neighbour v of u, do Visit(v).
-#             3.Prepend u to L.
-#         Otherwise do nothing.
-# 3.  For each element u of L in order, do Assign(u,u) where Assign(u,root) is the recursive subroutine:
-#         If u has not been assigned to a component then:
-#             1.Assign u as belonging to the component whose root is root.
-#             2.For each in-neighbour v of u, do Assign(v,root).
-#         Otherwise do nothing.
+
+
+
+
+
